@@ -1,0 +1,161 @@
+# BDD100K starter data for the main university project.
+# Paths are relative to this file / project root unless absolute.
+dataset: bdd100k
+project_root: /Users/yuvrajsingh/Downloads/Project/Deep-Learning-Based-Autonomous-Driving-Perception-and-Road-Risk-Analysis-System
+reference_repository: ../autonomous-driving  # reference only; do not edit
+
+source:
+  official_documentation: https://doc.bdd100k.com/download.html
+  official_data_host: https://dl.cv.ethz.ch/bdd100k/data/
+  extracted_roots:
+    images_10k: ../10k
+    detection_labels_2018: ../100k
+    segmentation_masks: ../bdd100k_seg_maps
+  raw_archive_directory: data/raw/bdd100k
+  extracted_data_is_read_only: true
+  packages:
+    images_10k:
+      archive: data/raw/bdd100k/bdd100k_images_10k.zip
+      provenance_record: http://128.32.162.150/bdd100k/bdd100k_images_10k.zip
+      local_md5: 9c5ee9df0097cc1ab799f58feb776611
+      official_reference_md5: 08f26aecceda982568063d3d5873378e
+      official_md5_matches: false
+      zip_crc: pass
+      archive_members_compared_to_extraction: 10000
+      extraction_size_and_crc_mismatches: 0
+      provenance_note: >-
+        Transfer history records the legacy Berkeley URL; this ZIP has no
+        kMDItemWhereFroms attribute. MD5 mismatch leaves exact release identity
+        unresolved and is not, by itself, evidence of corruption.
+    detection_labels_2018:
+      archive: data/raw/bdd100k/bdd100k_labels.zip
+      provenance: http://128.32.162.150/bdd100k/bdd100k_labels.zip
+      local_md5: 2d0165fd89b11025206e21a25ae1089d
+      zip_crc: pass
+      archive_members_compared_to_extraction: 100000
+      extraction_size_and_crc_mismatches: 0
+    semantic_masks:
+      archive: data/raw/bdd100k/bdd100k_seg_maps.zip
+      provenance: http://128.32.162.150/bdd100k/bdd100k_seg_maps.zip
+      local_md5: 7607c97f0fc366fad39f0a450ab7c4fc
+      zip_crc: pass
+      archive_members_compared_to_extraction: 16000
+      extraction_size_and_crc_mismatches: 0
+
+paths:
+  prepared_manifests_and_audits: data/processed/bdd100k
+  split_id_lists: split_manifest
+  visual_examples: dataset_samples
+  dataset_report: dataset_report.md
+  test_results: test_results.txt
+
+splits:
+  detection:
+    method: seeded image-level split over matched 10K training images only
+    seed: 42
+    validation_fraction: 0.2
+    counts: {train: 2744, validation: 686, test: 830}
+    held_out_test_source: 10K test images matched to 2018 test labels
+  combined_policy: >-
+    No image used to train either task appears in either task's validation or test set;
+    combined validation and test IDs are disjoint. Same-split cross-task sharing is allowed.
+  segmentation:
+    method: official 7000 train IDs minus combined evaluation IDs; preserve official validation
+    official_counts: {train: 7000, validation: 1000}
+    counts: {train: 6314, validation: 1000, test: 0}
+    excluded_official_train_ids: 686
+    test_note: no semantic test masks are included; detection test IDs remain held out
+  combined_unique_counts: {train: 6314, validation: 1686, test: 830}
+  shared_same_split_train_ids: 2744
+  train_vs_validation_intersection: 0
+  train_vs_test_intersection: 0
+  validation_vs_test_intersection: 0
+  image_size_hw: [448, 800]
+  native_image_size_wh: [1280, 720]
+  loader_workers_recommended_for_this_mac: 0
+
+models:
+  detection: ResNet-18 + FPN
+  segmentation: ResNet-18 + U-Net
+  training_started: false
+
+detection:
+  num_classes: 10
+  class_names:
+    - bike
+    - bus
+    - car
+    - motor
+    - person
+    - rider
+    - traffic light
+    - traffic sign
+    - train
+    - truck
+  invalid_or_degenerate_boxes_skipped: 21
+  unknown_categories_observed: 0
+  empty_labeled_samples: 0
+
+segmentation:
+  source_label_encoding: BDD100K official train_id, 0-18, with 255 void
+  num_classes: 5
+  class_names:
+    - background
+    - road
+    - sidewalk
+    - vehicles
+    - vulnerable road users
+  ignore_index: 255
+  train_id_to_class_id:
+    0: 1
+    1: 2
+    2: 0
+    3: 0
+    4: 0
+    5: 0
+    6: 0
+    7: 0
+    8: 0
+    9: 0
+    10: 0
+    11: 4
+    12: 4
+    13: 3
+    14: 3
+    15: 3
+    16: 3
+    17: 3
+    18: 3
+    255: 255
+  unknown_train_ids: 255
+  void_and_unknown_handling: ignore
+
+archive_integrity:
+  method: ZIP CRC test plus per-member extracted-file size and CRC32 comparison
+  total_archive_members: 126000
+  total_uncompressed_bytes_compared: 3136138559
+  missing_extracted_members: 0
+  member_size_or_crc_mismatches: 0
+
+validation:
+  exhaustive_preparation_audit:
+    images_decoded: 10000
+    segmentation_image_mask_pairs_checked: 8000
+    missing_files: 0
+    corrupt_files: 0
+    unusable_segmentation_pairs: 0
+    unexpected_train_id_values: 0
+  sampled_loader_audit:
+    seed: 2026
+    samples_per_each_of_five_splits: 64
+    batch_size: 8
+    workers_compared: [0, 2]
+    total_task_split_samples: 320
+  cross_task_split_policy: >-
+    The 686 detection validation IDs are removed from segmentation training. The official
+    1000-ID segmentation validation split and 830 detection test IDs remain held out.
+    Cross-task shared training IDs are allowed only when both tasks assign them to train.
+  cross_task_audit: data/processed/bdd100k/summary.json#combined_split_audit
+  excluded_evaluation_ids: split_manifest/segmentation_excluded_combined_evaluation_ids.txt
+  official_segmentation_train_ids: split_manifest/segmentation_official_train_ids.txt
+  cross_task_shared_train_ids: split_manifest/cross_task_shared_train_ids.txt

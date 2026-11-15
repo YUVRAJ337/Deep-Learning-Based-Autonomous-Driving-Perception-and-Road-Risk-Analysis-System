@@ -1,0 +1,24 @@
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+.env
+
+# Dataset files only
+data/raw/
+data/processed/
+
+# Model weights
+checkpoints/
+*.pt
+*.pth
+
+# Experiment outputs
+runs/
+outputs/
+logs/
+
+# BDD100K generated handoff data (small config/report remain trackable)
+dataset_samples/
+split_manifest/
+test_results.txt

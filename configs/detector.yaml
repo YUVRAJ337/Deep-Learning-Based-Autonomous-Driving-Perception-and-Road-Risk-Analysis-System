@@ -1,0 +1,24 @@
+# data
+data_root: data/raw/v1.0-trainval
+batch_size: 4
+
+# model
+# FPN returns features coarsest-first (P5, P4, P3) per fpn.py → anchors must match.
+# P5 stride 32 (coarse, large objects) → P3 stride 8 (fine, small objects).
+num_classes: 3
+num_anchors: 3
+scales: [128, 64, 32]
+aspect_ratios: [0.5, 1.0, 2.0]
+strides: [32, 16, 8]
+
+# backbone
+pretrained: true
+
+# training
+epochs: 40
+lr: 0.001
+backbone_lr_scale: 0.1
+weight_decay: 0.0001
+scheduler: cosine
+patience: 10
+grad_clip: 1.0

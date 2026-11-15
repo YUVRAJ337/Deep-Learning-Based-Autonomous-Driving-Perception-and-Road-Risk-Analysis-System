@@ -1,0 +1,51 @@
+# BDD100K starter-data settings. Paths are relative to the main project root.
+# The extracted source folders are existing read-only siblings of this repository;
+# this config avoids re-extracting or copying the image/label/mask trees.
+dataset: bdd100k
+source_roots:
+  images_10k: ../10k
+  detection_labels_2018: ../100k
+  segmentation: ../bdd100k_seg_maps
+  raw_archives: data/raw/bdd100k
+  processed: data/processed/bdd100k
+
+splits:
+  detection_seed: 42
+  detection_validation_fraction: 0.2
+  detection_test: official_10k_test_only
+  segmentation: official_train_minus_combined_eval_ids_and_official_validation
+  require_cross_task_train_eval_disjoint: true
+  require_combined_validation_test_disjoint: true
+
+# Class order is the label ID order used by data/bdd100k_dataset.py.
+detection:
+  num_classes: 10
+  class_names:
+    - bike
+    - bus
+    - car
+    - motor
+    - person
+    - rider
+    - traffic light
+    - traffic sign
+    - train
+    - truck
+  image_size: [448, 800] # height, width; native images are 720x1280
+
+segmentation:
+  official_split_counts: {train: 7000, validation: 1000}
+  working_split_counts: {train: 6314, validation: 1000, test: 0}
+  excluded_official_train_ids: 686
+  excluded_evaluation_manifest: split_manifest/segmentation_excluded_combined_evaluation_ids.txt
+  official_train_manifest: split_manifest/segmentation_official_train_ids.txt
+  num_classes: 5
+  class_names:
+    - background
+    - road
+    - sidewalk
+    - vehicles
+    - vulnerable road users
+  train_id_to_class_id: [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 3, 3, 3, 3, 3, 3]
+  ignore_index: 255
+  image_size: [448, 800]

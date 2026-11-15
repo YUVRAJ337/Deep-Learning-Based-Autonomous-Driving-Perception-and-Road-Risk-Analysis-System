@@ -1,0 +1,19 @@
+dataset: bdd100k
+processed_root: data/processed/bdd100k
+batch_size: 2
+num_workers: 0
+image_size: [448, 800]
+num_classes: 10
+num_anchors: 3
+scales: [128, 64, 32]
+aspect_ratios: [0.5, 1.0, 2.0]
+strides: [32, 16, 8]
+pretrained: true
+epochs: 40
+lr: 0.001
+backbone_lr_scale: 0.1
+weight_decay: 0.0001
+scheduler: cosine
+patience: 10
+grad_clip: 1.0
+ckpt_path: checkpoints/bdd100k_detector_best.pt
